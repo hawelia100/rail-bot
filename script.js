@@ -1,77 +1,80 @@
-// 1. DATABASE
-const trainDatabase = [
-    { from: "ahmedabad", to: "mumbai", train: "Vande Bharat (20902)", time: "05:00 AM", price: 1200, seats: "Available (42)" },
-    { from: "rourkela", to: "puri", train: "Vande Bharat (20835)", time: "02:00 PM", price: 1125, seats: "Available (192)" },
-    { from: "rourkela", to: "puri", train: "Tapaswini Exp (18451)", time: "06:20 PM", price: 330, seats: "Waitlist (12)" },
-    { from: "mumbai", to: "delhi", train: "Rajdhani Exp (12431)", time: "04:00 PM", price: 2800, seats: "RAC (5)" }
-];
+// 1. DYNAMIC DATA MATRIX
+const cityCoords = {
+    "ahmedabad": {x: 72.5, y: 23.0},
+    "mumbai": {x: 72.8, y: 19.0},
+    "delhi": {x: 77.2, y: 28.6},
+    "rourkela": {x: 84.8, y: 22.2},
+    "puri": {x: 85.8, y: 19.8},
+    "kolkata": {x: 88.3, y: 22.5},
+    "bangalore": {x: 77.5, y: 12.9},
+    "chennai": {x: 80.2, y: 13.0}
+};
 
-// 2. UI ELEMENTS
-const chatBox = document.getElementById('chat-box');
-const userInput = document.getElementById('user-input');
-const sendBtn = document.getElementById('send-btn');
+const box = document.getElementById('chat-box');
+const input = document.getElementById('user-input');
+const btn = document.getElementById('send-btn');
 
-// 3. HELPER FUNCTIONS
-function addMessage(text, type) {
-    const msg = document.createElement('div');
-    msg.className = `message ${type}-message`;
-    msg.innerText = text;
-    chatBox.appendChild(msg);
-    chatBox.scrollTop = chatBox.scrollHeight;
+function show(msg, type) {
+    const d = document.createElement('div');
+    d.className = `message ${type}-message`;
+    d.innerText = msg;
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
 }
 
-function processInput(input) {
-    const text = input.toLowerCase().trim();
+function getTrains(from, to) {
+    // Math to calculate distance between any two coordinates
+    const p1 = cityCoords[from] || {x: 70 + Math.random()*15, y: 15 + Math.random()*15};
+    const p2 = cityCoords[to] || {x: 70 + Math.random()*15, y: 15 + Math.random()*15};
+    
+    const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)) * 105;
+    
+    return [
+        { n: `Vande Bharat (${Math.floor(Math.random()*9000+22000)})`, tm: "07:15 AM", p: Math.floor(distance * 2.8), s: "Available (48)" },
+        { n: `Rajdhani Exp (${Math.floor(Math.random()*9000+12000)})`, tm: "04:30 PM", p: Math.floor(distance * 2.1), s: "Available (12)" },
+        { n: `Shatabdi Exp (${Math.floor(Math.random()*9000+12000)})`, tm: "06:00 AM", p: Math.floor(distance * 1.8), s: "RAC (04)" }
+    ];
+}
 
-    // Greeting Logic
-    const greetings = ["hi", "hello", "hey"];
-    if (greetings.some(g => text === g)) {
-        setTimeout(() => {
-            addMessage("Hello! I'm your RailBot. Where are you traveling? (e.g., 'Rourkela to Puri')", "bot");
-        }, 500);
+function reply(text) {
+    const val = text.toLowerCase().trim();
+
+    // 1. Greeting
+    if (["hi", "hello", "hey"].includes(val)) {
+        setTimeout(() => show("Hello! I'm RailBot. Enter a route (e.g., 'Rourkela to Puri') to see schedules.", "bot"), 500);
         return;
     }
 
-    // Search Logic
-    if (text.includes(" to ")) {
-        const cities = text.split(" to ");
-        const fromCity = cities[0].trim();
-        const toCity = cities[1].trim();
-
-        addMessage(`Searching trains from ${fromCity} to ${toCity}...`, "bot");
+    // 2. Search Logic (A to B and B to A)
+    if (val.includes(" to ")) {
+        const [from, to] = val.split(" to ").map(s => s.trim());
+        show(`🔍 Scanning networks for ${from} ➔ ${to}...`, "bot");
 
         setTimeout(() => {
-            const matches = trainDatabase.filter(t => t.from === fromCity && t.to === toCity);
-
-            if (matches.length > 0) {
-                addMessage(`✅ Found ${matches.length} trains:`, "bot");
-                matches.forEach((match, index) => {
-                    const response = `🚆 ${match.train}\n⏰ Time: ${match.time}\n💺 Status: ${match.seats}\n💰 Fare: ₹${match.price}`;
-                    setTimeout(() => addMessage(response, "bot"), (index + 1) * 600);
-                });
-            } else {
-                addMessage(`No direct trains found for ${fromCity} to ${toCity}. Try 'Rourkela to Puri'.`, "bot");
-            }
-        }, 1500);
+            const results = getTrains(from, to);
+            show(`✅ Results for ${from.toUpperCase()} ➔ ${to.toUpperCase()}:`, "bot");
+            
+            results.forEach((tr, i) => {
+                const info = `🚆 ${tr.n}\n⏰ Departs: ${tr.tm}\n💺 Status: ${tr.s}\n💰 Fare: ₹${tr.p}`;
+                setTimeout(() => show(info, "bot"), (i + 1) * 600);
+            });
+        }, 1200);
         return;
     }
 
-    // Default Fallback
+    // 3. YOUR CUSTOM EDITED MESSAGE
     setTimeout(() => {
-        addMessage("Try searching a route like 'Mumbai to Delhi'.", "bot");
+        show("Looks like you found my blind spot 👀\nLet’s switch lanes", "bot");
     }, 500);
 }
 
-// 4. EVENT LISTENERS
-sendBtn.addEventListener('click', () => {
-    const val = userInput.value;
-    if (val.trim() !== "") {
-        addMessage(val, "user");
-        processInput(val);
-        userInput.value = "";
+// Control Logic
+btn.onclick = () => {
+    if (input.value.trim() !== "") {
+        show(input.value, "user");
+        reply(input.value);
+        input.value = "";
     }
-});
+};
 
-userInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendBtn.click();
-});
+input.onkeypress = (e) => { if (e.key === 'Enter') btn.onclick(); };
