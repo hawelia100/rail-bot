@@ -14,6 +14,11 @@ const trainDatabase = [
     // DELHI ROUTES
     { from: "delhi", to: "jaipur", train: "Ajmer Shatabdi (12015)", time: "06:10 AM", price1A: 1500, price2A: 1100, price3A: 800, status: "Available (30)" },
     { from: "delhi", to: "varanasi", train: "Vande Bharat Exp (22436)", time: "06:00 AM", price1A: 3200, price2A: 2400, price3A: 1600, status: "Available (08)" }
+    // Add these to your trainDatabase array
+{ from: "rourkela", to: "puri", train: "Vande Bharat Exp (20835)", time: "02:00 PM", price: 1125, seats: "Available (192)" },
+{ from: "rourkela", to: "puri", train: "Tapaswini Exp (18451)", time: "06:20 PM", price: 330, seats: "Waitlist (12)" },
+{ from: "rourkela", to: "puri", train: "Kalinga Utkal Exp (18478)", time: "02:50 PM", price: 395, seats: "Available (24)" },
+    
 ];
 
 const chatBox = document.getElementById('chat-box');
@@ -37,26 +42,53 @@ function getBotResponse(input) {
     }
 
     // Search Logic
-    if (query.includes(" to ")) {
-        const parts = query.split(" to ");
-        const from = parts[0].trim();
-        const to = parts[1].trim();
+    function processInput(input) {
+    const text = input.toLowerCase().trim();
 
-        const results = trainDatabase.filter(t => t.from === from && t.to === to);
+    // 1. Handling Greetings
+    const greetings = ["hi", "hello", "hey", "good morning", "good evening"];
+    if (greetings.some(g => text === g)) {
+        setTimeout(() => {
+            addMessage("Hello! I'm your RailBot concierge. Where are you planning to travel? (e.g., 'Ahmedabad to Mumbai')", "bot");
+        }, 500);
+        return;
+    }
 
-        addMessage(`🔍 Searching IRCTC database for ${from} to ${to}...`, "bot");
+    // 2. Handling the "Search" Intent (REPLACED SECTION)
+    if (text.includes(" to ")) {
+        const cities = text.split(" to ");
+        const fromCity = cities[0].trim();
+        const toCity = cities[1].trim();
+
+        addMessage(`Searching for best trains from ${fromCity} to ${toCity}...`, "bot");
 
         setTimeout(() => {
-            if (results.length > 0) {
-                results.forEach(match => {
-                    const info = `✅ ${match.train}\n🕒 Departs: ${match.time}\n📊 Status: ${match.status}\n\nFares:\n• 1AC: ₹${match.price1A}\n• 2AC: ₹${match.price2A}\n• 3AC: ₹${match.price3A}`;
-                    addMessage(info, "bot");
+            // This uses .filter to find ALL matching trains in your database
+            const matches = trainDatabase.filter(t => t.from === fromCity && t.to === toCity);
+
+            if (matches.length > 0) {
+                addMessage(`✅ Found ${matches.length} trains for your journey:`, "bot");
+                
+                matches.forEach((match, index) => {
+                    // This generates the cinematic response for each train found
+                    const response = `🚆 ${match.train}\n⏰ Time: ${match.time}\n💺 Status: ${match.seats}\n💰 Fare: ₹${match.price}`;
+                    
+                    // index * 500 makes them appear one after another, very smoothly!
+                    setTimeout(() => addMessage(response, "bot"), (index + 1) * 500); 
                 });
             } else {
-                addMessage(`❌ No direct trains found for "${from}" to "${to}" in our current 2026 schedule. Try "Ahmedabad to Mumbai" or "Delhi to Jaipur".`, "bot");
+                addMessage(`Sorry, I couldn't find a direct train from ${fromCity} to ${toCity}. Try "Rourkela to Puri"!`, "bot");
             }
-        }, 1200);
-        return null;
+        }, 1500);
+        return;
+    }
+
+    // 3. Fallback for other messages
+    setTimeout(() => {
+        addMessage("I'm specialized in train bookings. Please provide a route (e.g., 'Delhi to Jaipur') so I can assist you.", "bot");
+    }, 500);
+}
+
     }
 
     return "I'm not sure about that. Please try searching for a route, e.g., 'Mumbai to Delhi'.";
