@@ -1,30 +1,17 @@
-// A more detailed "Real-World" Database for 2026
+// 1. DATABASE
 const trainDatabase = [
-    // AHMEDABAD ROUTES
-    { from: "ahmedabad", to: "mumbai", train: "Vande Bharat Exp (20902)", time: "05:00 AM", price1A: 2450, price2A: 1800, price3A: 1200, status: "Available (42)" },
-    { from: "ahmedabad", to: "mumbai", train: "Karnavati Exp (12934)", time: "04:55 AM", price1A: 1450, price2A: 1100, price3A: 850, status: "RAC (10)" },
-    { from: "ahmedabad", to: "surat", train: "Double Decker (02932)", time: "06:00 AM", price1A: 800, price2A: 600, price3A: 450, status: "Available (120)" },
-    { from: "ahmedabad", to: "delhi", train: "Swarna Jayanti Rajdhani (12957)", time: "06:30 PM", price1A: 4200, price2A: 3100, price3A: 2200, status: "Available (15)" },
-    
-    // MUMBAI ROUTES
-    { from: "mumbai", to: "delhi", train: "August Kranti Rajdhani (12953)", time: "05:10 PM", price1A: 4800, price2A: 3500, price3A: 2600, status: "Waitlist (5)" },
-    { from: "mumbai", to: "ahmedabad", train: "Tejas Express (82901)", time: "03:55 PM", price1A: 2600, price2A: 1900, price3A: 1300, status: "Available (22)" },
-    { from: "mumbai", to: "pune", train: "Deccan Queen (12124)", time: "07:15 AM", price1A: 950, price2A: 700, price3A: 500, status: "Available (64)" },
-
-    // DELHI ROUTES
-    { from: "delhi", to: "jaipur", train: "Ajmer Shatabdi (12015)", time: "06:10 AM", price1A: 1500, price2A: 1100, price3A: 800, status: "Available (30)" },
-    { from: "delhi", to: "varanasi", train: "Vande Bharat Exp (22436)", time: "06:00 AM", price1A: 3200, price2A: 2400, price3A: 1600, status: "Available (08)" }
-    // Add these to your trainDatabase array
-{ from: "rourkela", to: "puri", train: "Vande Bharat Exp (20835)", time: "02:00 PM", price: 1125, seats: "Available (192)" },
-{ from: "rourkela", to: "puri", train: "Tapaswini Exp (18451)", time: "06:20 PM", price: 330, seats: "Waitlist (12)" },
-{ from: "rourkela", to: "puri", train: "Kalinga Utkal Exp (18478)", time: "02:50 PM", price: 395, seats: "Available (24)" },
-    
+    { from: "ahmedabad", to: "mumbai", train: "Vande Bharat (20902)", time: "05:00 AM", price: 1200, seats: "Available (42)" },
+    { from: "rourkela", to: "puri", train: "Vande Bharat (20835)", time: "02:00 PM", price: 1125, seats: "Available (192)" },
+    { from: "rourkela", to: "puri", train: "Tapaswini Exp (18451)", time: "06:20 PM", price: 330, seats: "Waitlist (12)" },
+    { from: "mumbai", to: "delhi", train: "Rajdhani Exp (12431)", time: "04:00 PM", price: 2800, seats: "RAC (5)" }
 ];
 
+// 2. UI ELEMENTS
 const chatBox = document.getElementById('chat-box');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 
+// 3. HELPER FUNCTIONS
 function addMessage(text, type) {
     const msg = document.createElement('div');
     msg.className = `message ${type}-message`;
@@ -33,7 +20,61 @@ function addMessage(text, type) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function getBotResponse(input) {
+function processInput(input) {
+    const text = input.toLowerCase().trim();
+
+    // Greeting Logic
+    const greetings = ["hi", "hello", "hey"];
+    if (greetings.some(g => text === g)) {
+        setTimeout(() => {
+            addMessage("Hello! I'm your RailBot. Where are you traveling? (e.g., 'Rourkela to Puri')", "bot");
+        }, 500);
+        return;
+    }
+
+    // Search Logic
+    if (text.includes(" to ")) {
+        const cities = text.split(" to ");
+        const fromCity = cities[0].trim();
+        const toCity = cities[1].trim();
+
+        addMessage(`Searching trains from ${fromCity} to ${toCity}...`, "bot");
+
+        setTimeout(() => {
+            const matches = trainDatabase.filter(t => t.from === fromCity && t.to === toCity);
+
+            if (matches.length > 0) {
+                addMessage(`✅ Found ${matches.length} trains:`, "bot");
+                matches.forEach((match, index) => {
+                    const response = `🚆 ${match.train}\n⏰ Time: ${match.time}\n💺 Status: ${match.seats}\n💰 Fare: ₹${match.price}`;
+                    setTimeout(() => addMessage(response, "bot"), (index + 1) * 600);
+                });
+            } else {
+                addMessage(`No direct trains found for ${fromCity} to ${toCity}. Try 'Rourkela to Puri'.`, "bot");
+            }
+        }, 1500);
+        return;
+    }
+
+    // Default Fallback
+    setTimeout(() => {
+        addMessage("Try searching a route like 'Mumbai to Delhi'.", "bot");
+    }, 500);
+}
+
+// 4. EVENT LISTENERS
+sendBtn.addEventListener('click', () => {
+    const val = userInput.value;
+    if (val.trim() !== "") {
+        addMessage(val, "user");
+        processInput(val);
+        userInput.value = "";
+    }
+});
+
+userInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendBtn.click();
+});
     const query = input.toLowerCase();
 
     // Greeting Logic
