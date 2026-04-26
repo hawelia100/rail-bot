@@ -1,54 +1,40 @@
 :root {
     --premium-gold: #D4AF37;
-    --glass-bg: rgba(25, 25, 25, 0.85);
-    --border-glow: rgba(212, 175, 55, 0.3);
+    --glass-bg: rgba(15, 15, 15, 0.9);
 }
 
 body {
-    /* Animated Premium Background */
-    background: linear-gradient(-45deg, #050505, #1a1a1a, #000, #111);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
     font-family: 'Inter', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    overflow: hidden; /* Prevents body bounce on mobile */
-}
-
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    transition: box-shadow 1s ease;
 }
 
 .chat-container {
-    width: 90%;
+    width: 95%;
     max-width: 420px;
-    height: 85vh; /* Flexible height for mobile keyboards */
+    height: 85vh;
     background: var(--glass-bg);
-    backdrop-filter: blur(15px);
-    border-radius: 28px;
+    backdrop-filter: blur(20px);
+    border-radius: 30px;
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 40px 100px rgba(0,0,0,0.9), 0 0 20px var(--border-glow);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    box-shadow: 0 50px 100px rgba(0,0,0,0.9);
 }
 
 header {
-    padding: 20px;
+    padding: 25px;
     text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
 }
 
 header h2 { 
-    margin: 0; 
-    color: var(--premium-gold); 
-    letter-spacing: 3px; 
-    text-transform: uppercase;
-    font-size: 1.2rem;
+    margin: 0; color: var(--premium-gold); letter-spacing: 4px; font-weight: 300;
 }
 
 .chat-box {
@@ -64,49 +50,65 @@ header h2 {
 .message {
     max-width: 80%;
     padding: 15px 20px;
-    border-radius: 22px;
-    font-size: 0.95rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
     line-height: 1.6;
-    animation: fadeIn 0.4s ease forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    white-space: pre-line;
 }
 
 .bot-message {
     background: rgba(255, 255, 255, 0.05);
-    color: #fff;
+    color: #eee;
     align-self: flex-start;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 2px;
+}
+
+/* LUXURY THEME FOR SEARCH RESULTS */
+.premium-result {
+    border: 1px solid rgba(212, 175, 55, 0.4) !important;
+    background: linear-gradient(135deg, #111, #1a1a1a) !important;
+    color: #fff !important;
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-result::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 4s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
 }
 
 .user-message {
-    background: linear-gradient(135deg, #D4AF37, #996515); /* Gold Gradient */
+    background: linear-gradient(135deg, #D4AF37, #996515);
     color: #000;
     align-self: flex-end;
     font-weight: 600;
-    border-bottom-right-radius: 5px;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    border-bottom-right-radius: 2px;
 }
 
 .input-area {
-    padding: 15px;
+    padding: 20px;
     display: flex;
     gap: 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.4);
 }
 
 input {
     flex: 1;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 14px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 12px;
     color: white;
-    border-radius: 15px;
+    border-radius: 12px;
     outline: none;
 }
 
@@ -115,7 +117,7 @@ button {
     color: #000;
     border: none;
     padding: 0 20px;
-    border-radius: 15px;
+    border-radius: 12px;
     font-weight: 700;
     cursor: pointer;
 }
