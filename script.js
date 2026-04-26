@@ -1,4 +1,4 @@
-// 1. REAL TRAIN DATABASE
+// 1. REAL INDIAN RAILWAYS DATABASE
 const realTrains = [
     { n: "Vande Bharat Express (20835)", p: 1250 },
     { n: "Rajdhani Express (12431)", p: 2800 },
@@ -17,6 +17,7 @@ const realTrains = [
     { n: "Azad Hind Express (12130)", p: 720 }
 ];
 
+// Coordinate Matrix for Distance Math
 const cityCoords = {
     "ahmedabad": {x: 72.5, y: 23.0}, "mumbai": {x: 72.8, y: 19.0},
     "delhi": {x: 77.2, y: 28.6}, "rourkela": {x: 84.8, y: 22.2},
@@ -30,36 +31,46 @@ const box = document.getElementById('chat-box');
 const input = document.getElementById('user-input');
 const btn = document.getElementById('send-btn');
 
+// LUXURY SHOW FUNCTION WITH AUTO-SCROLL
 function show(msg, type) {
     const d = document.createElement('div');
     d.className = `message ${type}-message`;
     d.innerText = msg;
     box.appendChild(d);
-    box.scrollTop = box.scrollHeight;
+    
+    // Forces the scroll to the bottom instantly so new messages are always visible
+    box.scrollTo({
+        top: box.scrollHeight,
+        behavior: 'smooth'
+    });
 }
 
+// MATH ENGINE TO SIMULATE REALISTIC SEARCH
 function getTrains(from, to) {
     if (from === to) return [];
     
-    // Pick 3 real trains from the list to show for any route
-    // We shuffle a bit so it's not always the same 3
-    const shuffled = realTrains.sort(() => 0.5 - Math.random());
+    // Shuffle the real train list to pick 3 random ones
+    const shuffled = [...realTrains].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 3).map(tr => ({
         n: tr.n,
+        // Generates realistic times
         tm: `${Math.floor(Math.random() * 12) + 1}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')} ${Math.random() > 0.5 ? 'AM' : 'PM'}`,
         p: tr.p,
         s: Math.random() > 0.3 ? `Available (${Math.floor(Math.random() * 50)})` : `Waitlist (${Math.floor(Math.random() * 10)})`
     }));
 }
 
+// THE OFFICIAL BRAIN OF THE BOT
 function reply(text) {
     const val = text.toLowerCase().trim();
 
+    // 1. GREETING
     if (["hi", "hello", "hey"].includes(val)) {
         setTimeout(() => show("Hello! I'm RailBot. Enter your route to start.", "bot"), 500);
         return;
     }
 
+    // 2. PLACE DETECTION (The Signal Logic)
     const knownCities = Object.keys(cityCoords);
     if (knownCities.includes(val) || (val.split(" ").length === 1 && val.length > 2)) {
         setTimeout(() => {
@@ -68,6 +79,7 @@ function reply(text) {
         return;
     }
 
+    // 3. JOURNEY SEARCH LOGIC
     if (val.includes(" to ")) {
         const [from, to] = val.split(" to ").map(s => s.trim());
         show(`🔍 Scanning IRCTC Database for ${from} ➔ ${to}...`, "bot");
@@ -75,23 +87,27 @@ function reply(text) {
         setTimeout(() => {
             const results = getTrains(from, to);
             if (results.length > 0) {
+                // SUCCESS MESSAGE
                 show("Your journey just got clearer—check this out 👇", "bot");
                 results.forEach((tr, i) => {
                     const info = `🚆 ${tr.n}\n⏰ Departs: ${tr.tm}\n💺 Status: ${tr.s}\n💰 Fare: ₹${tr.p}`;
                     setTimeout(() => show(info, "bot"), (i + 1) * 600);
                 });
             } else {
+                // ERROR MESSAGE FOR NO TRAINS
                 show("No direct trains found—want me to check alternate routes?", "bot");
             }
         }, 1200);
         return;
     }
 
+    // 4. FALLBACK (BLIND SPOT)
     setTimeout(() => {
         show("Looks like you found my blind spot 👀\nLet’s switch lanes", "bot");
     }, 500);
 }
 
+// EVENT LISTENERS
 btn.onclick = () => {
     if (input.value.trim() !== "") {
         show(input.value, "user");
@@ -99,4 +115,9 @@ btn.onclick = () => {
         input.value = "";
     }
 };
-input.onkeypress = (e) => { if (e.key === 'Enter') btn.onclick(); };
+
+input.onkeypress = (e) => {
+    if (e.key === 'Enter') {
+        btn.onclick();
+    }
+};
