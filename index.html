@@ -2,24 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RailBot | India Concierge</title>
+    /* Prevent mobile zooming to keep the luxury layout fixed */
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RailBot | Elite Travel Concierge</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="chat-container">
         <header>
             <h2>RailBot</h2>
-            <p>Premium Indian Railways AI</p>
+            <p>CONCIERGE SERVICE</p>
         </header>
+
         <div id="chat-box" class="chat-box">
-            <div class="message bot-message">Hello! Where are we headed today? <br><small>Try: "Rourkela to Puri" or "Mumbai to Delhi"</small></div>
+            <div class="message bot-message">
+                Welcome. I am your premium transit assistant. 
+                Where shall we travel today?
+            </div>
         </div>
+
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="e.g. Ahmedabad to Surat..." autocomplete="off">
-            <button id="send-btn">Search</button>
+            <input type="text" id="user-input" placeholder="e.g. Rourkela to Puri..." autocomplete="off">
+            <button id="send-btn">SEARCH</button>
         </div>
     </div>
+
     <script src="script.js"></script>
+
 </body>
 </html>
